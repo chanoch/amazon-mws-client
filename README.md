@@ -5,6 +5,47 @@ This client currently assumes that the seller is querying orders for a single ma
 
 Example settings are given for a seller in the UK (therefore using the EU marketplace)
 
+#Features
+## Update Standard Price for a product (updatePrices())
+Update prices for a list of seller's products identified by the seller assigned product SKUs 
+
+This implementation supports setting the simple price only (no sale or volume pricing)
+
+Price updates in amazon are carried out via the Feeds API. The recommendation is that you carry out price changes with a maximmum frequency of every 20 mins
+
+You should provide an MWS_ENDPOINT and an MWS_SUBMIT_FEED_URI process vars.
+
+This has been testing in the eu marketplace. The feed version used was 2009-01-01 (These are the defaults) 
+
+## Get mws query string (getQueryString())
+Every MWS request contains a list of standard parameters which include authentication tokens, the seller id, a list of applicable marketplaces and a timestamp. 
+
+It combines these with the Action - an identifier for the type of request being processed - and the action specific parameters. An example of action specific parameters for the feeds API are the FeedType and an base64 encoded MD5 hash of the price set message included in the body of the POST request.
+
+The getQueryString() function compiles the standard query params from the environment, URI encodes and sorts them by natural byte ordering and then creates a query string from the resultant array. (Natural byte ordering is a process by which values are sorted by increasing byte value according to the char map for the encoding)
+
+** Note that currently this client only supports a single marketplace per instance. This marketplace is set at env level using process.env.MWS_MARKETPLACEID ** 
+
+The getQueryString() function takes the action, a version, and the timestamp of the request. MWS requires the timestamp to be within 15 minutes of current server time, probably to invalidate expired requests and replays of test and example requests
+
+* Action - api specific value, e.g. SubmitFeed (update listing), RequestReport (get listing data)
+* Version - api specific value, e.g. 2009-01-01
+* Timestamp - a timestamp in ISO format
+
+Higher level functions (such as updatePrices()) hard code these values as defaults or ask you to provide them in the environment.
+
+## Sign request (signQueryAndAppend())
+
+MWS requests have to be signed, ideally with SHA256, and the signature added as a request parameter. Call signQueryAndAppend() with the required args:
+
+* HttpVerb - as specified by the API specs e.g. GET, POST, etc 
+* HostHead - the API endpoint stripped of protocol, port, and trailing slash - e.g. https://mws-eu.amazonservices.com becomes mws-eu.amazonservices.com
+* HTTPRequestURI - the action's endpoint path e.g. /feeds/2009-01-01/ (the version is also supplied in the query string)
+* QueryString - contains the standard params plus the action specific query string params 
+
+## Sign an mws request
+An MWS request is signed using SHA256 by 
+
 ## General principles
 1. Create a query string
 1. Sort it using byte-order natural ordering

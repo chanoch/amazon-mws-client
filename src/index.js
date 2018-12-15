@@ -1,7 +1,9 @@
 import getQueryString from './getQueryString'
-import signRequestAndAppend from './signRequest'
+import { signQueryAndAppend } from './signRequest'
+import updatePrices from './updatePrices'
 
 export {
   getQueryString,
-  signRequestAndAppend
+  signQueryAndAppend,
+  updatePrices
 }

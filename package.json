@@ -1,7 +1,7 @@
 {
   "name": "@chanoch/amazon-mws-client",
-  "version": "0.1.0",
-  "description": "Amazon mws API client - creates and signs API requests",
+  "version": "0.2.4",
+  "description": "Amazon mws API client - provides integration with Amazon Marketplace Web Services APIs",
   "main": "dist/index.js",
   "scripts": {
     "start": "node dist/index.js",
